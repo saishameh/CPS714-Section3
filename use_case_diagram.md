@@ -37,9 +37,6 @@ graph TB
     UC1 -.includes.-> V2
     UC1 -.includes.-> V3
     
-    UC1 -.includes.-> UC4
-    UC2 -.includes.-> UC4
-    
     style Member fill:#e1f5ff
     style Admin fill:#fff4e1
     style UC1 fill:#c8e6c9
@@ -78,12 +75,10 @@ Administrative users who can:
      - Validate Membership Tier (check if member can access premium classes)
      - Check Class Capacity (ensure spots are available)
      - Prevent Duplicate Booking (verify member hasn't already booked)
-   - **Extends**: View My Bookings (after successful booking)
 
 2. **Cancel Class**
    - **Actor**: Member
    - **Description**: Member cancels their existing booking, freeing up a spot
-   - **Includes**: View My Bookings (updates booking list)
 
 3. **View Schedule**
    - **Actor**: Member, Admin/Staff
