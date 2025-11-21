@@ -14,7 +14,7 @@ sequenceDiagram
     activate FastAPI
     Note over FastAPI: BookingRequest received
     
-    FastAPI->>DB: SELECT * FROM class_schedules<br/>WHERE id = schedule_id
+    FastAPI->>DB: SELECT id, class_id, scheduled_date,<br/>time_from, time_to, taken_spots,<br/>total_spots FROM class_schedules<br/>WHERE id = schedule_id<br/>JOIN class ON class_id
     activate DB
     DB-->>FastAPI: Schedule + Class details
     deactivate DB

@@ -13,15 +13,10 @@ flowchart TD
     CheckExists -->|No| ErrorNotFound[Return Error:<br/>Booking not found or<br/>does not belong to user]
     ErrorNotFound --> End1([End])
     
-    CheckExists -->|Yes| CheckOwnership{Is Booking<br/>Owned by User?}
-    
-    CheckOwnership -->|No| ErrorOwnership[Return Error:<br/>Unauthorized access]
-    ErrorOwnership --> End2([End])
-    
-    CheckOwnership -->|Yes| CheckStatus{Is Booking<br/>Status = 'confirmed'?}
+    CheckExists -->|Yes| CheckStatus{Is Booking<br/>Status = 'confirmed'?}
     
     CheckStatus -->|No - Already Cancelled| ErrorAlreadyCancelled[Return Error:<br/>Booking already cancelled]
-    ErrorAlreadyCancelled --> End3([End])
+    ErrorAlreadyCancelled --> End2([End])
     
     CheckStatus -->|Yes| GetScheduleID[Extract schedule_id<br/>from booking record]
     
@@ -35,16 +30,14 @@ flowchart TD
     
     Success --> UpdateUI[Frontend Updates UI:<br/>- Remove from My Bookings<br/>- Show "Book" button again<br/>- Refresh schedule view]
     
-    UpdateUI --> End4([End])
+    UpdateUI --> End3([End])
     
     style Start fill:#4ade80
     style Success fill:#22c55e
     style UpdateUI fill:#86efac
     style ErrorNotFound fill:#ef4444
-    style ErrorOwnership fill:#ef4444
     style ErrorAlreadyCancelled fill:#f59e0b
     style CheckExists fill:#3b82f6
-    style CheckOwnership fill:#3b82f6
     style CheckStatus fill:#3b82f6
     style DecrementSpots fill:#8b5cf6
     style UpdateBooking fill:#8b5cf6
@@ -56,13 +49,10 @@ flowchart TD
 
 1. **Is Booking Found?**
    - Checks if booking exists in database matching booking_id and user_id
-   - Ensures the booking record exists before proceeding
+   - Ensures the booking record exists and belongs to the requesting user
+   - Ownership is verified by the query's WHERE clause (user_id filter)
 
-2. **Is Booking Owned by User?**
-   - Validates that the user_id in the booking matches the requesting user
-   - Prevents unauthorized cancellations of other members' bookings
-
-3. **Is Booking Status = 'confirmed'?**
+2. **Is Booking Status = 'confirmed'?**
    - Verifies the booking hasn't already been cancelled
    - Checks if cancelled_at is NULL and booking_status is 'confirmed'
    - Prevents duplicate cancellation attempts
@@ -80,8 +70,7 @@ flowchart TD
 
 ### Error Paths
 
-- **Booking Not Found**: Invalid booking_id or doesn't belong to user
-- **Unauthorized Access**: User doesn't own the booking (security check)
+- **Booking Not Found**: Invalid booking_id or doesn't belong to user (ownership verified in query)
 - **Already Cancelled**: Booking status is already 'cancelled'
 
 ### Database Operations
